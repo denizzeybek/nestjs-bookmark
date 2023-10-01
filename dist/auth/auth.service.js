@@ -14,9 +14,13 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const argon = require("argon2");
 const library_1 = require("@prisma/client/runtime/library");
+const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 let AuthService = class AuthService {
-    constructor(prisma) {
+    constructor(prisma, jwt, config) {
         this.prisma = prisma;
+        this.jwt = jwt;
+        this.config = config;
     }
     async signup(signupDto) {
         try {
@@ -42,10 +46,11 @@ let AuthService = class AuthService {
         }
     }
     async signin(signinDto) {
+        console.log('signinDto ', signinDto);
         const user = await this.prisma.user.findUnique({
             where: {
-                email: signinDto.email
-            }
+                email: signinDto.email,
+            },
         });
         if (!user) {
             throw new common_1.ForbiddenException('Credentials incorrect');
@@ -55,12 +60,27 @@ let AuthService = class AuthService {
             throw new common_1.ForbiddenException('Credentials incorrect');
         }
         delete user.hash;
-        return user;
+        const token = this.signToken({ userId: user.id, email: user.email });
+        const response = { ...user, token };
+        return response;
+    }
+    signToken(signTokenDto) {
+        const payload = {
+            sub: signTokenDto.userId,
+            email: signTokenDto.email,
+        };
+        const secret = this.config.get('JWT_SECRET');
+        return this.jwt.signAsync(payload, {
+            expiresIn: '15m',
+            secret: secret,
+        });
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        jwt_1.JwtService,
+        config_1.ConfigService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

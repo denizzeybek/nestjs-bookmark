@@ -7,10 +7,17 @@ import { SignupDto } from './dto/signup.dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { SigninDto } from './dto/signin.dto';
+import { JwtService } from '@nestjs/jwt';
+import { SignTokenDto } from './dto/signTokenDto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private config: ConfigService
+  ) {}
 
   async signup(signupDto: SignupDto) {
     try {
@@ -45,25 +52,43 @@ export class AuthService {
       throw error;
     }
   }
+
   async signin(signinDto: SigninDto) {
     // find user by email
+    console.log('signinDto ', signinDto);
     const user = await this.prisma.user.findUnique({
       where: {
-        email: signinDto.email
-      }
-    })
+        email: signinDto.email,
+      },
+    });
     // if user does not exist throw exception
     if (!user) {
       throw new ForbiddenException('Credentials incorrect');
     }
     // compare password
-    const passwordMatches = await argon.verify(user.hash, signinDto.password)
+    const passwordMatches = await argon.verify(user.hash, signinDto.password);
     if (!passwordMatches) {
       throw new ForbiddenException('Credentials incorrect');
     }
     // if password incorrect throw exception
     delete user.hash;
+    // get token
+    const token = this.signToken({userId: user.id, email: user.email});
+    const response = {...user, token}
     // return user
-    return user;
+    return response;
+  }
+
+  // Promise<string> olarak belirttiğin alan return type'a eşdeğer
+  signToken(signTokenDto: SignTokenDto): Promise<string> {
+    const payload = {
+      sub: signTokenDto.userId,
+      email: signTokenDto.email,
+    };
+    const secret = this.config.get('JWT_SECRET');
+    return this.jwt.signAsync(payload, {
+      expiresIn: '15m',
+      secret: secret,
+    });
   }
 }
