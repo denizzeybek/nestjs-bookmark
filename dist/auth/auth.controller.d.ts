@@ -14,7 +14,7 @@ export declare class AuthController {
         lastName: string;
     }>;
     signin(signinDto: SigninDto): Promise<{
-        token: Promise<string>;
+        access_token: string;
         id: number;
         createdAt: Date;
         updatedAt: Date;

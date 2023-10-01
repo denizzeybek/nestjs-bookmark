@@ -46,7 +46,6 @@ let AuthService = class AuthService {
         }
     }
     async signin(signinDto) {
-        console.log('signinDto ', signinDto);
         const user = await this.prisma.user.findUnique({
             where: {
                 email: signinDto.email,
@@ -60,20 +59,24 @@ let AuthService = class AuthService {
             throw new common_1.ForbiddenException('Credentials incorrect');
         }
         delete user.hash;
-        const token = this.signToken({ userId: user.id, email: user.email });
-        const response = { ...user, token };
+        const token = await this.signToken({ userId: user.id, email: user.email });
+        const { access_token } = token;
+        const response = { ...user, access_token };
         return response;
     }
-    signToken(signTokenDto) {
+    async signToken(signTokenDto) {
         const payload = {
             sub: signTokenDto.userId,
             email: signTokenDto.email,
         };
         const secret = this.config.get('JWT_SECRET');
-        return this.jwt.signAsync(payload, {
+        const token = await this.jwt.signAsync(payload, {
             expiresIn: '15m',
             secret: secret,
         });
+        return {
+            access_token: token,
+        };
     }
 };
 exports.AuthService = AuthService;

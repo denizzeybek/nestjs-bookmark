@@ -19,7 +19,7 @@ export declare class AuthService {
         lastName: string;
     }>;
     signin(signinDto: SigninDto): Promise<{
-        token: Promise<string>;
+        access_token: string;
         id: number;
         createdAt: Date;
         updatedAt: Date;
@@ -28,5 +28,7 @@ export declare class AuthService {
         firstName: string;
         lastName: string;
     }>;
-    signToken(signTokenDto: SignTokenDto): Promise<string>;
+    signToken(signTokenDto: SignTokenDto): Promise<{
+        access_token: string;
+    }>;
 }

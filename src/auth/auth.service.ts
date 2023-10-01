@@ -55,7 +55,6 @@ export class AuthService {
 
   async signin(signinDto: SigninDto) {
     // find user by email
-    console.log('signinDto ', signinDto);
     const user = await this.prisma.user.findUnique({
       where: {
         email: signinDto.email,
@@ -73,22 +72,29 @@ export class AuthService {
     // if password incorrect throw exception
     delete user.hash;
     // get token
-    const token = this.signToken({userId: user.id, email: user.email});
-    const response = {...user, token}
+    const token = await this.signToken({ userId: user.id, email: user.email });
+    const { access_token } = token;
+    const response = { ...user, access_token };
     // return user
     return response;
   }
 
   // Promise<string> olarak belirttiğin alan return type'a eşdeğer
-  signToken(signTokenDto: SignTokenDto): Promise<string> {
+  async signToken(
+    signTokenDto: SignTokenDto
+  ): Promise<{ access_token: string }> {
     const payload = {
       sub: signTokenDto.userId,
       email: signTokenDto.email,
     };
     const secret = this.config.get('JWT_SECRET');
-    return this.jwt.signAsync(payload, {
+    const token = await this.jwt.signAsync(payload, {
       expiresIn: '15m',
       secret: secret,
     });
+
+    return {
+      access_token: token,
+    };
   }
 }
