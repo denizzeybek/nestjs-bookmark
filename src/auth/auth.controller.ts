@@ -3,13 +3,20 @@ import {
   Get,
   Post,
   Body,
+  Req,
   Patch,
   Param,
   Delete,
+  ValidationPipe,
+  NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { SigninDto } from './dto/signin.dto';
+import { SignupDto } from './dto/signup.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +24,8 @@ export class AuthController {
 
   @Post('signup')
   // auth/signup
-  signup(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.signup();
+  signup(@Body(new ValidationPipe()) signupDto: SignupDto) {
+    return this.authService.signup(signupDto);
   }
 
   @Post('signin')
