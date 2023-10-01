@@ -12,11 +12,8 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Controller('auth')
 export class AuthController {
