@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
 export declare class AuthController {
     private readonly authService;
@@ -13,5 +13,13 @@ export declare class AuthController {
         firstName: string;
         lastName: string;
     }>;
-    signin(createAuthDto: CreateAuthDto): string;
+    signin(signinDto: SigninDto): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        hash: string;
+        firstName: string;
+        lastName: string;
+    }>;
 }

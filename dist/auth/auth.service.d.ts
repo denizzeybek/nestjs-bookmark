@@ -1,5 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignupDto } from './dto/signup.dto';
+import { SigninDto } from './dto/signin.dto';
 export declare class AuthService {
     private prisma;
     constructor(prisma: PrismaService);
@@ -12,5 +13,13 @@ export declare class AuthService {
         firstName: string;
         lastName: string;
     }>;
-    signin(): string;
+    signin(signinDto: SigninDto): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        hash: string;
+        firstName: string;
+        lastName: string;
+    }>;
 }
