@@ -10,6 +10,8 @@ import {
   ValidationPipe,
   NotFoundException,
   ForbiddenException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninDto } from './dto/signin.dto';
@@ -25,6 +27,8 @@ export class AuthController {
     return this.authService.signup(signupDto);
   }
 
+
+  @HttpCode(HttpStatus.OK)
   @Post('signin')
   // auth/signin
   signin(@Body(new ValidationPipe()) signinDto: SigninDto) {

@@ -27,6 +27,7 @@ let UserController = class UserController {
 };
 exports.UserController = UserController;
 __decorate([
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, common_1.Get)(),
     __param(0, (0, decorator_1.GetUser)()),
     __metadata("design:type", Function),

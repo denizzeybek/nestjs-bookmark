@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Req,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -24,6 +26,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // /users
+  @HttpCode(HttpStatus.OK)
   @Get()
   findAll(@GetUser() user: User) {
     return user;
