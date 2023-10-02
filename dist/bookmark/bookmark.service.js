@@ -5,28 +5,76 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookmarkService = void 0;
 const common_1 = require("@nestjs/common");
+const prisma_service_1 = require("../prisma/prisma.service");
 let BookmarkService = class BookmarkService {
-    create(createBookmarkDto) {
-        return 'This action adds a new bookmark';
+    constructor(prisma) {
+        this.prisma = prisma;
     }
-    findAll() {
-        return `This action returns all bookmark`;
+    getBookmarks(userId) {
+        return this.prisma.bookmark.findMany({
+            where: {
+                userId,
+            },
+        });
     }
-    findOne(id) {
-        return `This action returns a #${id} bookmark`;
+    getBookmarkById(userId, bookmarkId) {
+        return this.prisma.bookmark.findFirst({
+            where: {
+                id: bookmarkId,
+                userId,
+            },
+        });
     }
-    update(id, updateBookmarkDto) {
-        return `This action updates a #${id} bookmark`;
+    async createBookmark(userId, createBookmarkDto) {
+        const bookmark = await this.prisma.bookmark.create({
+            data: {
+                userId,
+                ...createBookmarkDto,
+            },
+        });
+        return bookmark;
     }
-    remove(id) {
-        return `This action removes a #${id} bookmark`;
+    async editBookmarkById(userId, bookmarkId, updateBookmarkDto) {
+        const bookmark = await this.prisma.bookmark.findUnique({
+            where: {
+                id: bookmarkId,
+            },
+        });
+        if (!bookmark || bookmark.userId !== userId)
+            throw new common_1.ForbiddenException('Access to resources denied');
+        return this.prisma.bookmark.update({
+            where: {
+                id: bookmarkId,
+            },
+            data: {
+                ...updateBookmarkDto,
+            },
+        });
+    }
+    async deleteBookmarkById(userId, bookmarkId) {
+        const bookmark = await this.prisma.bookmark.findUnique({
+            where: {
+                id: bookmarkId,
+            },
+        });
+        if (!bookmark || bookmark.userId !== userId)
+            throw new common_1.ForbiddenException('Access to resources denied');
+        await this.prisma.bookmark.delete({
+            where: {
+                id: bookmarkId,
+            },
+        });
     }
 };
 exports.BookmarkService = BookmarkService;
 exports.BookmarkService = BookmarkService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], BookmarkService);
 //# sourceMappingURL=bookmark.service.js.map

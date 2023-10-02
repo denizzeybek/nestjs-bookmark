@@ -17,63 +17,72 @@ const common_1 = require("@nestjs/common");
 const bookmark_service_1 = require("./bookmark.service");
 const create_bookmark_dto_1 = require("./dto/create-bookmark.dto");
 const update_bookmark_dto_1 = require("./dto/update-bookmark.dto");
+const decorator_1 = require("../auth/decorator");
+const guard_1 = require("../auth/guard");
 let BookmarkController = class BookmarkController {
     constructor(bookmarkService) {
         this.bookmarkService = bookmarkService;
     }
-    create(createBookmarkDto) {
-        return this.bookmarkService.create(createBookmarkDto);
+    getBookmarks(userId) {
+        return this.bookmarkService.getBookmarks(+userId);
     }
-    findAll() {
-        return this.bookmarkService.findAll();
+    getBookmarkById(userId, bookmarkId) {
+        return this.bookmarkService.getBookmarkById(+userId, +bookmarkId);
     }
-    findOne(id) {
-        return this.bookmarkService.findOne(+id);
+    createBookmark(userId, createBookmarkDto) {
+        return this.bookmarkService.createBookmark(+userId, createBookmarkDto);
     }
-    update(id, updateBookmarkDto) {
-        return this.bookmarkService.update(+id, updateBookmarkDto);
+    editBookmarkById(userId, bookmarkId, updateBookmarkDto) {
+        return this.bookmarkService.editBookmarkById(+userId, +bookmarkId, updateBookmarkDto);
     }
-    remove(id) {
-        return this.bookmarkService.remove(+id);
+    deleteBookmarkById(userId, bookmarkId) {
+        return this.bookmarkService.deleteBookmarkById(+userId, +bookmarkId);
     }
 };
 exports.BookmarkController = BookmarkController;
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_bookmark_dto_1.CreateBookmarkDto]),
-    __metadata("design:returntype", void 0)
-], BookmarkController.prototype, "create", null);
-__decorate([
     (0, common_1.Get)(),
+    __param(0, (0, decorator_1.GetUser)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
-], BookmarkController.prototype, "findAll", null);
+], BookmarkController.prototype, "getBookmarks", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, decorator_1.GetUser)('id')),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", void 0)
-], BookmarkController.prototype, "findOne", null);
+], BookmarkController.prototype, "getBookmarkById", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Post)(),
+    __param(0, (0, decorator_1.GetUser)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_bookmark_dto_1.UpdateBookmarkDto]),
+    __metadata("design:paramtypes", [Number, create_bookmark_dto_1.CreateBookmarkDto]),
     __metadata("design:returntype", void 0)
-], BookmarkController.prototype, "update", null);
+], BookmarkController.prototype, "createBookmark", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, decorator_1.GetUser)('id')),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number, Number, update_bookmark_dto_1.UpdateBookmarkDto]),
     __metadata("design:returntype", void 0)
-], BookmarkController.prototype, "remove", null);
+], BookmarkController.prototype, "editBookmarkById", null);
+__decorate([
+    (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, decorator_1.GetUser)('id')),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:returntype", void 0)
+], BookmarkController.prototype, "deleteBookmarkById", null);
 exports.BookmarkController = BookmarkController = __decorate([
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
     (0, common_1.Controller)('bookmark'),
     __metadata("design:paramtypes", [bookmark_service_1.BookmarkService])
 ], BookmarkController);

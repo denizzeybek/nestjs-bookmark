@@ -1,4 +1,15 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateBookmarkDto } from './create-bookmark.dto';
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export class UpdateBookmarkDto extends PartialType(CreateBookmarkDto) {}
+export class UpdateBookmarkDto {
+    @IsString()
+    @IsOptional()
+    title?: string;
+
+    @IsString()
+    @IsOptional()
+    description?: string;
+
+    @IsString()
+    @IsOptional()
+    link?: string;
+}
