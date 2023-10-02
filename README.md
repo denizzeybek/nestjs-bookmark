@@ -39,6 +39,7 @@ $ yarn install
 $ yarn run start
 
 # watch mode
+$ yarn start:prisma
 $ yarn run start:dev
 
 # production mode
